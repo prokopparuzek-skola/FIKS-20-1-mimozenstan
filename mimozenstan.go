@@ -20,6 +20,7 @@ func main() {
 			fmt.Scan(&Ni)
 			a = a.append(Ni)
 			avl, _ = avl.insert(plate{Ni, a})
+			//fmt.Println(avl)
 		}
 		//fmt.Println(l)
 		//fmt.Println(avl)

@@ -20,7 +20,7 @@ func (v *vertex) String() (out string) {
 	}
 	out += "("
 	out += v.left.String()
-	out += fmt.Sprint(v.value.value)
+	out += fmt.Sprint(v.value.value, v.sign)
 	out += v.right.String()
 	out += ")"
 	return
@@ -60,14 +60,14 @@ func DrotR(v *vertex) (ov *vertex) {
 	ov.right = x
 	switch ov.sign {
 	case -1:
-		y.sign = 1
-		x.sign = 0
+		y.sign = 0
+		x.sign = 1
 	case 0:
 		y.sign = 0
 		x.sign = 0
 	case 1:
-		y.sign = 0
-		x.sign = 1
+		y.sign = -1
+		x.sign = 0
 	}
 	ov.sign = 0
 	return
@@ -91,14 +91,14 @@ func DrotL(v *vertex) (ov *vertex) {
 	ov.left = x
 	switch ov.sign {
 	case -1:
-		y.sign = 0
-		x.sign = 1
+		y.sign = 1
+		x.sign = 0
 	case 0:
 		y.sign = 0
 		x.sign = 0
 	case 1:
-		y.sign = 1
-		x.sign = 0
+		y.sign = 0
+		x.sign = -1
 	}
 	ov.sign = 0
 	return
