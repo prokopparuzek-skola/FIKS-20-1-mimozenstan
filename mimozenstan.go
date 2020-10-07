@@ -15,11 +15,12 @@ func main() {
 		fmt.Scan(&N)
 		fmt.Scan(&Ni)
 		l.value = Ni
-		avl = avl.insert(plate{Ni, l})
+		avl, _ = avl.insert(plate{Ni, l})
 		for j := uint(1); j < N; j++ {
 			fmt.Scan(&Ni)
 			a = a.append(Ni)
-			avl = avl.insert(plate{Ni, a})
+			avl, _ = avl.insert(plate{Ni, a})
+			//fmt.Println(avl)
 		}
 		fmt.Println(l)
 		fmt.Println(avl)
