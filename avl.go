@@ -42,6 +42,68 @@ func (v *vertex) max() *vertex {
 	}
 }
 
+func rotR(v *vertex) (ov *vertex) {
+	ov = v.left
+	v.left = ov.right
+	ov.right = v
+	ov.sign = 0
+	v.sign = 0
+	return
+}
+
+func DrotR(v *vertex) (ov *vertex) {
+	x, y := v, v.left
+	ov = y.right
+	x.left = ov.right
+	y.right = ov.left
+	ov.left = y
+	ov.right = x
+	switch ov.sign {
+	case -1:
+		y.sign = 1
+		x.sign = 0
+	case 0:
+		y.sign = 0
+		x.sign = 0
+	case 1:
+		y.sign = 0
+		x.sign = 1
+	}
+	ov.sign = 0
+	return
+}
+
+func rotL(v *vertex) (ov *vertex) {
+	ov = v.right
+	v.right = ov.left
+	ov.left = v
+	ov.sign = 0
+	v.sign = 0
+	return
+}
+
+func DrotL(v *vertex) (ov *vertex) {
+	x, y := v, v.right
+	ov = y.left
+	x.right = ov.left
+	y.left = ov.right
+	ov.right = y
+	ov.left = x
+	switch ov.sign {
+	case -1:
+		y.sign = 0
+		x.sign = 1
+	case 0:
+		y.sign = 0
+		x.sign = 0
+	case 1:
+		y.sign = 1
+		x.sign = 0
+	}
+	ov.sign = 0
+	return
+}
+
 func (v *vertex) insert(p plate) (ov *vertex, bigger bool) { // chytry insert
 	var isBigger bool
 
@@ -56,31 +118,10 @@ func (v *vertex) insert(p plate) (ov *vertex, bigger bool) { // chytry insert
 			case -1:
 				switch v.left.sign {
 				case -1: // jednoduchá rotace vpravo
-					ov = v.left
-					v.left = ov.right
-					ov.right = v
-					ov.sign = 0
-					v.sign = 0
+					ov = rotR(v)
 					bigger = false
-				case 1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
-					x, y := v, v.left
-					ov = y.right
-					x.left = ov.right
-					y.right = ov.left
-					ov.left = y
-					ov.right = x
-					switch ov.sign {
-					case -1:
-						y.sign = 1
-						x.sign = 0
-					case 0:
-						y.sign = 0
-						x.sign = 0
-					case 1:
-						y.sign = 0
-						x.sign = 1
-					}
-					ov.sign = 0
+				case 1: // dvojitá rotace vpravo url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
+					ov = DrotR(v)
 					bigger = false
 				}
 			case 0:
@@ -102,31 +143,10 @@ func (v *vertex) insert(p plate) (ov *vertex, bigger bool) { // chytry insert
 			case 1:
 				switch v.right.sign {
 				case 1: // jednoduchá rotace vlevo
-					ov = v.right
-					v.right = ov.left
-					ov.left = v
-					ov.sign = 0
-					v.sign = 0
+					ov = rotL(v)
 					bigger = false
-				case -1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
-					x, y := v, v.right
-					ov = y.left
-					x.right = ov.left
-					y.left = ov.right
-					ov.right = y
-					ov.left = x
-					switch ov.sign {
-					case -1:
-						y.sign = 0
-						x.sign = 1
-					case 0:
-						y.sign = 0
-						x.sign = 0
-					case 1:
-						y.sign = 1
-						x.sign = 0
-					}
-					ov.sign = 0
+				case -1: // dvojitá rotace vlevo url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
+					ov = DrotL(v)
 					bigger = false
 				}
 			case 0:
@@ -163,38 +183,15 @@ func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý dele
 			case 1:
 				switch v.right.sign {
 				case 1: // rotace vlevo
-					ov = v.right
-					v.right = ov.left
-					ov.left = v
-					ov.sign = 0
-					v.sign = 0
+					ov = rotL(v)
 					shorter = true
 				case 0:
-					ov = v.right
-					v.right = ov.left
-					ov.left = v
+					ov = rotL(v)
 					ov.sign = -1
 					v.sign = 1
 					shorter = false
 				case -1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
-					x, y := v, v.right
-					ov = y.left
-					x.right = ov.left
-					y.left = ov.right
-					ov.right = y
-					ov.left = x
-					switch ov.sign {
-					case -1:
-						y.sign = 0
-						x.sign = 1
-					case 0:
-						y.sign = 0
-						x.sign = 0
-					case 1:
-						y.sign = 1
-						x.sign = 0
-					}
-					ov.sign = 0
+					ov = DrotL(v)
 					shorter = true
 				}
 			}
@@ -216,38 +213,15 @@ func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý dele
 			case -1:
 				switch v.left.sign {
 				case -1: // rotace vpravo
-					ov = v.left
-					v.left = ov.right
-					ov.right = v
-					ov.sign = 0
-					v.sign = 0
+					ov = rotR(v)
 					shorter = true
 				case 0:
-					ov = v.left
-					v.left = ov.right
-					ov.right = v
+					ov = rotR(v)
 					ov.sign = -1
 					v.sign = 1
 					shorter = false
 				case 1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
-					x, y := v, v.left
-					ov = y.right
-					x.left = ov.right
-					y.right = ov.left
-					ov.left = y
-					ov.right = x
-					switch ov.sign {
-					case -1:
-						y.sign = 1
-						x.sign = 0
-					case 0:
-						y.sign = 0
-						x.sign = 0
-					case 1:
-						y.sign = 0
-						x.sign = 1
-					}
-					ov.sign = 0
+					ov = DrotR(v)
 					shorter = true
 				}
 			}
@@ -281,38 +255,15 @@ func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý dele
 				case -1:
 					switch v.left.sign {
 					case -1: // rotace vpravo
-						ov = v.left
-						v.left = ov.right
-						ov.right = v
-						ov.sign = 0
-						v.sign = 0
+						ov = rotR(v)
 						shorter = true
 					case 0:
-						ov = v.left
-						v.left = ov.right
-						ov.right = v
+						ov = rotR(v)
 						ov.sign = -1
 						v.sign = 1
 						shorter = false
 					case 1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
-						x, y := v, v.left
-						ov = y.right
-						x.left = ov.right
-						y.right = ov.left
-						ov.left = y
-						ov.right = x
-						switch ov.sign {
-						case -1:
-							y.sign = 1
-							x.sign = 0
-						case 0:
-							y.sign = 0
-							x.sign = 0
-						case 1:
-							y.sign = 0
-							x.sign = 1
-						}
-						ov.sign = 0
+						ov = DrotR(v)
 						shorter = true
 					}
 				}
