@@ -7,13 +7,17 @@ func main() {
 	fmt.Scan(&T)
 	for i := uint(0); i < T; i++ {
 		var N uint
-		var pads []uint
+		var l, a *element
+		l = &element{}
+		a = l
 
 		fmt.Scan(&N)
-		pads = make([]uint, N)
-		for j := uint(0); j < N; j++ {
-			fmt.Scan(&pads[j])
+		fmt.Scan(&l.value)
+		for j := uint(1); j < N; j++ {
+			var Ni uint
+			fmt.Scan(&Ni)
+			a = a.append(Ni)
 		}
-		fmt.Println(N, pads)
+		fmt.Println(l.String())
 	}
 }
