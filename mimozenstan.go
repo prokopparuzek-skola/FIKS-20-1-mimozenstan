@@ -21,8 +21,8 @@ func main() {
 			a = a.append(Ni)
 			avl, _ = avl.insert(plate{Ni, a})
 		}
-		fmt.Println(l)
-		fmt.Println(avl)
+		//fmt.Println(l)
+		//fmt.Println(avl)
 		fmt.Println(solve(avl))
 	}
 }
@@ -34,17 +34,19 @@ func solve(avl *vertex) string {
 		if avl != nil { // max
 			max := avl.max()
 			rm = max.value.position.listR()
-			fmt.Println(rm)
+			//fmt.Println(rm)
 			for _, p := range rm {
 				avl, _ = avl.delete(p)
+				//fmt.Println(avl)
 			}
 		}
 		if avl != nil { // min
 			min := avl.min()
 			rm = min.value.position.listL()
-			fmt.Println(rm)
+			//fmt.Println(rm)
 			for _, p := range rm {
 				avl, _ = avl.delete(p)
+				//fmt.Println(avl)
 			}
 		} else {
 			return "PRVNI"

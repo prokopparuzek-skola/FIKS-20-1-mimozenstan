@@ -44,6 +44,7 @@ func (v *vertex) max() *vertex {
 
 func (v *vertex) insert(p plate) (ov *vertex, bigger bool) { // chytry insert
 	var isBigger bool
+
 	if v == nil {
 		ov = &vertex{}
 		ov.value = p
@@ -147,10 +148,7 @@ func (v *vertex) insert(p plate) (ov *vertex, bigger bool) { // chytry insert
 func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý delete
 	var isShorter bool
 
-	if v == nil {
-		ov = nil
-		shorter = false
-	} else if value < v.value.value {
+	if value < v.value.value {
 		v.left, isShorter = v.left.delete(value)
 		if isShorter {
 			switch v.sign {
@@ -187,14 +185,14 @@ func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý dele
 					ov.left = x
 					switch ov.sign {
 					case -1:
-						y.sign = 1
-						x.sign = 0
+						y.sign = 0
+						x.sign = 1
 					case 0:
 						y.sign = 0
 						x.sign = 0
 					case 1:
-						y.sign = 0
-						x.sign = 1
+						y.sign = 1
+						x.sign = 0
 					}
 					ov.sign = 0
 					shorter = true
@@ -240,14 +238,14 @@ func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý dele
 					ov.right = x
 					switch ov.sign {
 					case -1:
-						y.sign = 0
-						x.sign = 1
+						y.sign = 1
+						x.sign = 0
 					case 0:
 						y.sign = 0
 						x.sign = 0
 					case 1:
-						y.sign = 1
-						x.sign = 0
+						y.sign = 0
+						x.sign = 1
 					}
 					ov.sign = 0
 					shorter = true
@@ -270,6 +268,57 @@ func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý dele
 			tmp := v.right.min()
 			v.value = tmp.value
 			v.right, isShorter = v.right.delete(tmp.value.value)
+			if isShorter {
+				switch v.sign {
+				case 1:
+					v.sign = 0
+					ov = v
+					shorter = true
+				case 0:
+					v.sign = -1
+					ov = v
+					shorter = false
+				case -1:
+					switch v.left.sign {
+					case -1: // rotace vpravo
+						ov = v.left
+						v.left = ov.right
+						ov.right = v
+						ov.sign = 0
+						v.sign = 0
+						shorter = true
+					case 0:
+						ov = v.left
+						v.left = ov.right
+						ov.right = v
+						ov.sign = -1
+						v.sign = 1
+						shorter = false
+					case 1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
+						x, y := v, v.left
+						ov = y.right
+						x.left = ov.right
+						y.right = ov.left
+						ov.left = y
+						ov.right = x
+						switch ov.sign {
+						case -1:
+							y.sign = 1
+							x.sign = 0
+						case 0:
+							y.sign = 0
+							x.sign = 0
+						case 1:
+							y.sign = 0
+							x.sign = 1
+						}
+						ov.sign = 0
+						shorter = true
+					}
+				}
+			} else {
+				ov = v
+			}
 		}
 	}
 	return
