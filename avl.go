@@ -217,8 +217,8 @@ func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý dele
 					shorter = true
 				case 0:
 					ov = rotR(v)
-					ov.sign = -1
-					v.sign = 1
+					ov.sign = 1
+					v.sign = -1
 					shorter = false
 				case 1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
 					ov = DrotR(v)
@@ -259,8 +259,8 @@ func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý dele
 						shorter = true
 					case 0:
 						ov = rotR(v)
-						ov.sign = -1
-						v.sign = 1
+						ov.sign = 1
+						v.sign = -1
 						shorter = false
 					case 1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
 						ov = DrotR(v)
