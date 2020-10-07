@@ -27,7 +27,7 @@ func (v *vertex) String() (out string) {
 }
 
 func (v *vertex) min() *vertex {
-	if v == nil {
+	if v.left == nil {
 		return v
 	} else {
 		return v.left.min()
@@ -35,7 +35,7 @@ func (v *vertex) min() *vertex {
 }
 
 func (v *vertex) max() *vertex {
-	if v == nil {
+	if v.right == nil {
 		return v
 	} else {
 		return v.right.max()
@@ -147,7 +147,7 @@ func (v *vertex) insert(p plate) (ov *vertex, bigger bool) { // chytry insert
 func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý delete
 	var isShorter bool
 
-	if value == v.value.value {
+	if v == nil {
 		ov = nil
 		shorter = false
 	} else if value < v.value.value {
@@ -204,7 +204,7 @@ func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý dele
 			ov = v
 		}
 	} else if value > v.value.value {
-		v.left, isShorter = v.right.delete(value)
+		v.right, isShorter = v.right.delete(value)
 		if isShorter {
 			switch v.sign {
 			case 1:
@@ -257,7 +257,7 @@ func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý dele
 			ov = v
 		}
 	} else if value == v.value.value {
-		if v.right == nil && v.left == nil {
+		if (v.right == nil) && (v.left == nil) {
 			ov = nil
 			shorter = true
 		} else if v.right == nil {

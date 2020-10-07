@@ -21,6 +21,36 @@ func (l *element) String() (out string) {
 	return
 }
 
+func (l *element) listL() (list []uint) {
+	list = make([]uint, 0)
+	for l != nil {
+		list = append(list, l.value)
+		if l.left != nil {
+			l = l.left
+			l.right.delete()
+		} else {
+			l.delete()
+			break
+		}
+	}
+	return
+}
+
+func (l *element) listR() (list []uint) {
+	list = make([]uint, 0)
+	for l != nil {
+		list = append(list, l.value)
+		if l.right != nil {
+			l = l.right
+			l.left.delete()
+		} else {
+			l.delete()
+			break
+		}
+	}
+	return
+}
+
 func (e *element) append(v uint) *element {
 	e.right = &element{e, nil, v}
 	return e.right
