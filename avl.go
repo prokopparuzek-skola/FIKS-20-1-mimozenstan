@@ -54,11 +54,12 @@ func (v *vertex) insert(p plate) (ov *vertex, bigger bool) { // chytry insert
 			switch v.sign {
 			case -1:
 				switch v.left.sign {
-				case -1: // jednoduchá rotace
+				case -1: // jednoduchá rotace vpravo
 					ov = v.left
 					v.left = ov.right
 					ov.right = v
 					ov.sign = 0
+					v.sign = 0
 					bigger = false
 				case 1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
 					x, y := v, v.left
@@ -99,11 +100,12 @@ func (v *vertex) insert(p plate) (ov *vertex, bigger bool) { // chytry insert
 			switch v.sign {
 			case 1:
 				switch v.right.sign {
-				case 1: // jednoduchá rotace
+				case 1: // jednoduchá rotace vlevo
 					ov = v.right
 					v.right = ov.left
 					ov.left = v
 					ov.sign = 0
+					v.sign = 0
 					bigger = false
 				case -1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
 					x, y := v, v.right
@@ -114,14 +116,14 @@ func (v *vertex) insert(p plate) (ov *vertex, bigger bool) { // chytry insert
 					ov.left = x
 					switch ov.sign {
 					case -1:
-						y.sign = 1
-						x.sign = 0
+						y.sign = 0
+						x.sign = 1
 					case 0:
 						y.sign = 0
 						x.sign = 0
 					case 1:
-						y.sign = 0
-						x.sign = 1
+						y.sign = 1
+						x.sign = 0
 					}
 					ov.sign = 0
 					bigger = false
@@ -142,25 +144,133 @@ func (v *vertex) insert(p plate) (ov *vertex, bigger bool) { // chytry insert
 	return
 }
 
-func (v *vertex) delete(value uint) *vertex { // hloupý delete
+func (v *vertex) delete(value uint) (ov *vertex, shorter bool) { // chytrý delete
+	var isShorter bool
+
 	if value == v.value.value {
-		return nil
+		ov = nil
+		shorter = false
 	} else if value < v.value.value {
-		v.left = v.left.delete(value)
+		v.left, isShorter = v.left.delete(value)
+		if isShorter {
+			switch v.sign {
+			case -1:
+				v.sign = 0
+				ov = v
+				shorter = true
+			case 0:
+				v.sign = 1
+				ov = v
+				shorter = false
+			case 1:
+				switch v.right.sign {
+				case 1: // rotace vlevo
+					ov = v.right
+					v.right = ov.left
+					ov.left = v
+					ov.sign = 0
+					v.sign = 0
+					shorter = true
+				case 0:
+					ov = v.right
+					v.right = ov.left
+					ov.left = v
+					ov.sign = -1
+					v.sign = 1
+					shorter = false
+				case -1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
+					x, y := v, v.right
+					ov = y.left
+					x.right = ov.left
+					y.left = ov.right
+					ov.right = y
+					ov.left = x
+					switch ov.sign {
+					case -1:
+						y.sign = 1
+						x.sign = 0
+					case 0:
+						y.sign = 0
+						x.sign = 0
+					case 1:
+						y.sign = 0
+						x.sign = 1
+					}
+					ov.sign = 0
+					shorter = true
+				}
+			}
+		} else {
+			ov = v
+		}
 	} else if value > v.value.value {
-		v.right = v.right.delete(value)
+		v.left, isShorter = v.right.delete(value)
+		if isShorter {
+			switch v.sign {
+			case 1:
+				v.sign = 0
+				ov = v
+				shorter = true
+			case 0:
+				v.sign = -1
+				ov = v
+				shorter = false
+			case -1:
+				switch v.left.sign {
+				case -1: // rotace vpravo
+					ov = v.left
+					v.left = ov.right
+					ov.right = v
+					ov.sign = 0
+					v.sign = 0
+					shorter = true
+				case 0:
+					ov = v.left
+					v.left = ov.right
+					ov.right = v
+					ov.sign = -1
+					v.sign = 1
+					shorter = false
+				case 1: // dvojitá rotace url: https://ksp.mff.cuni.cz/kucharky/vyhledavaci-stromy/
+					x, y := v, v.left
+					ov = y.right
+					x.left = ov.right
+					y.right = ov.left
+					ov.left = y
+					ov.right = x
+					switch ov.sign {
+					case -1:
+						y.sign = 0
+						x.sign = 1
+					case 0:
+						y.sign = 0
+						x.sign = 0
+					case 1:
+						y.sign = 1
+						x.sign = 0
+					}
+					ov.sign = 0
+					shorter = true
+				}
+			}
+		} else {
+			ov = v
+		}
 	} else if value == v.value.value {
 		if v.right == nil && v.left == nil {
-			return nil
+			ov = nil
+			shorter = true
 		} else if v.right == nil {
-			return v.left
+			ov = v.left
+			shorter = true
 		} else if v.left == nil {
-			return v.right
+			ov = v.right
+			shorter = true
 		} else {
 			tmp := v.right.min()
 			v.value = tmp.value
-			v.right = v.right.delete(tmp.value.value)
+			v.right, isShorter = v.right.delete(tmp.value.value)
 		}
 	}
-	return v
+	return
 }
